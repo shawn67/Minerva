@@ -522,7 +522,8 @@ function addPassage(event){
                             rating: 3
                         },
                 });
-                addPassageCallBack(ptext, $target, response.trim(), doc_id);
+                passageFeedback = JSON.parse(response)
+                addPassageCallBack(ptext, $target, response['passage_id'].trim(), doc_id);
             }
         });
     };
