@@ -77,7 +77,7 @@ function getSidebar(){
                 for (i=0;i<data.length;i++){
                     $subtopic = generateSubtopic(data[i][1], data[i][0]);
                     for (j=2;j<data[i].length;j++){
-                        $passage = addPassageCallBack(data[i][j][1], $subtopic.find(".droppable"), data[i][j][0], data[i][j][2]);
+                        $passage = addPassageCallBack(data[i][j][1], $subtopic.find(".droppable"), data[i][j][0], data[i][j][2], {});
                         if (data[i][j][3] != -1){
                         //    $passage.addClass("grey");
                             $passage.find("input").eq(data[i][j][3] - 1).prop("checked",true);
@@ -523,7 +523,7 @@ function addPassage(event){
                         },
                 });
                 passageFeedback = JSON.parse(response)
-                addPassageCallBack(ptext, $target, response['passage_id'].trim(), doc_id);
+                addPassageCallBack(ptext, $target, passageFeedback['passage_id'].trim(), doc_id, passageFeedback);
             }
         });
     };
@@ -537,7 +537,7 @@ function dragendfunc(){
     $dragging = null;
 };
 
-function addPassageCallBack(ptext, $target, response, doc_id){
+function addPassageCallBack(ptext, $target, response, doc_id, dict){
     if (response == -1) {
 	alertdialog(12);
     }
@@ -550,15 +550,23 @@ function addPassageCallBack(ptext, $target, response, doc_id){
 			    <img class="deletePassage" src="./img/trash.png">\
 			    <div class="clear"></div>\
 			</div>\
-			<form>\
-			    <input type="radio" class="score" name="score" value="1" />\
-			    OK evidence \
-			    <input type="radio" class="score" name="score" value="2" />\
-			    Strong evidence\
-			    <input type="radio" class="score" name="score" value="3" />\
-			    Key evidence\
-			</form>\
 		    </div>');
+    if ($.isEmptyObject(dict)==false) {
+        $tmp_form = $("<form></form>");
+        for (var i = 0; i < dict['option'].length; i++){
+            $tmp_form.append('<input type="radio" class="pair" name="pair" value="' + i + '"/>' + dict['option'][i]);
+        }
+        $passage.append($tmp_form);
+    }
+    $passage.append('\
+                <form>\
+                    <input type="radio" class="score" name="score" value="1" />\
+                    OK evidence \
+                    <input type="radio" class="score" name="score" value="2" />\
+                    Strong evidence\
+                    <input type="radio" class="score" name="score" value="3" />\
+                    Key evidence\
+                </form>');
 	$passage.on("dragstart",dragstartfunc);
 	$passage.on("dragend",dragendfunc);
 	$passage.find('p').text(ptext);
