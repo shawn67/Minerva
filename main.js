@@ -522,8 +522,8 @@ function addPassage(event){
                             rating: 3
                         },
                 });
-                passageFeedback = JSON.parse(response)
-                addPassageCallBack(ptext, $target, passageFeedback['passage_id'].trim(), doc_id, passageFeedback);
+                passageFeedback = JSON.parse(response);
+                addPassageCallBack(ptext, $target, passageFeedback['passage_id'], doc_id, passageFeedback);
             }
         });
     };
@@ -552,14 +552,14 @@ function addPassageCallBack(ptext, $target, response, doc_id, dict){
 			</div>\
 		    </div>');
     if ($.isEmptyObject(dict)==false) {
-        $tmp_form = $("<form></form>");
-        for (var i = 0; i < dict['option'].length; i++){
-            $tmp_form.append('<input type="radio" class="pair" name="pair" value="' + i + '"/>' + dict['option'][i]);
+        $tmp_form = $('<form class="pairform"></form>');
+        for (var i = 0; i < dict['options'].length; i++){
+            $tmp_form.append('<input type="radio" class="pair" name="pair" value="' + i + '"/>' + dict['options'][i]+'<br/>');
         }
         $passage.append($tmp_form);
     }
     $passage.append('\
-                <form>\
+                <form class="scoreform">\
                     <input type="radio" class="score" name="score" value="1" />\
                     OK evidence \
                     <input type="radio" class="score" name="score" value="2" />\
