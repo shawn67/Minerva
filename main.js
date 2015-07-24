@@ -566,7 +566,7 @@ function addPassageCallBack(ptext, $target, response, doc_id, dict){
 			</div>\
 		    </div>');
     if ($.isEmptyObject(dict)==false) {
-        $tmp_form = $('<form class="pairform"></form>');
+        $tmp_form = $('<form class="pairform" "data-array='+ dict[parseStorage] + '"></form>');
 	if (dict['options'].length > 0) {
 	    $tmp_form.append('<div class="question">Is evidence to connect: </div>')    
 	} 
@@ -574,10 +574,11 @@ function addPassageCallBack(ptext, $target, response, doc_id, dict){
             $radio = $('<input type="radio" class="pair" name="pair" value="' + dict['options'][i] + '"/><span class="optionpair">' + dict['options'][i]+' ?</span><br/>');
 	    $tmp_form.append($radio);
 	    $($radio[0]).on("click", function(){
-		$.ajax({
+		/*$.ajax({
 		    method: "post",
 		    
-		});
+		});*/
+        alert($(this).closest('form').attr('data-array'));
 	    });//alert($(this).closest('span').text())});
         }
         $passage.append($tmp_form);
