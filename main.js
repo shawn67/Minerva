@@ -579,8 +579,12 @@ function addPassageCallBack(ptext, $target, response, doc_id, dict){
     		    method: "post",
                 url: "DynamicSearchHandler.cgi",
                 data: {
-                    para1: $tmp.closest('form').attr("data-array"),
-                    para2: $tmp.val()
+                    para_array: $tmp.closest('form').attr("data-array"),
+                    para_pair: $tmp.val(),
+                    user_id: uid,
+                    domain_id: did,
+                    case_id: tid,
+                    rating: 3
                 },
                 success: function(response){
                     // to do #### 

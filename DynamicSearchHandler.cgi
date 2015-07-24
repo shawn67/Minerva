@@ -5,7 +5,7 @@ import sys
 import sqlite3
 import subprocess
 from os import environ
-from config import database, index_path, IndriQueryHandler, retrieveNum, TestForm
+from config import database, index_path, IndriQueryHandler, retrieveNum, TestForm, queryFeedbackHandler
 #from authentication import cookieAuthentication
 
 type_array = ['init', 'fetch', 'feedback']
@@ -32,19 +32,15 @@ def main():
 		con = sqlite3.connect(database)
 		cur = con.cursor()
 
- 	if request_type in ['init', 'feedback']:
- 		if request_type == 'init':
- 			query, user_id, domain_id, case_id = getValues(form, ['case_name', 'user_id', 'domain_id', \
+ 	if request_type == 'init':
+ 		query, user_id, domain_id, case_id = getValues(form, ['case_name', 'user_id', 'domain_id', \
  			'case_id'])
- 			rating = 3
- 		else:
- 			query, user_id, domain_id, case_id, rating = getValues(form, ['annotated_text', 'user_id', 'domain_id', \
- 			'case_id', 'rating'])
+ 		rating = -1
 
  		if query == '' or not query:
  			return statusResponse(400)
 		try: 
-			user_id, domain_id, case_id, rating = int(user_id), int(domain_id), int(case_id), int(rating)-4
+			user_id, domain_id, case_id = int(user_id), int(domain_id), int(case_id)
 			## validate the tuple above
 		except:
 			return statusResponse(400)
@@ -96,7 +92,27 @@ def main():
 		print (return_str)
 
 	elif request_type == 'feedback':
-		pass
+		query, user_id, domain_id, case_id, para_array, para_pair = getValues(form, ['case_name', 'user_id', 'domain_id', \
+ 			'case_id', 'para_array', 'para_pair'])
+		rating = -1
+		try: 
+			user_id, domain_id, case_id = int(user_id), int(domain_id), int(case_id)
+			## validate the tuple above
+		except:
+			return statusResponse(400)
+		try:
+			queries = subprocess.check_output(['java','-jar',queryFeedbackHandler, '"%s"'%para_pair, '"%s"'%para_array])
+			log_handler = open('queries.log','w')
+			log_handler.write(queries)
+			log_handler.close()
+		except:
+		    queries = ''
+		'''
+		try:
+		    retrieved_results = subprocess.check_output([IndriQueryHandler, index_path[domain_id], query.replace('\n',''), str(retrieveNum)])
+		except:
+		    retrieved_results = ''
+		'''
 	else:
 		errorRequest(400)
 
