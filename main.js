@@ -574,11 +574,18 @@ function addPassageCallBack(ptext, $target, response, doc_id, dict){
             $radio = $('<input type="radio" class="pair" name="pair" value="' + dict['options'][i] + '"/><span class="optionpair">' + dict['options'][i]+' ?</span><br/>');
 	    $tmp_form.append($radio);
 	    $($radio[0]).on("click", function(){
-		/*$.ajax({
-		    method: "post",
-		    
-		});*/
-        alert($(this).closest('form').attr('data-array'));
+            var $tmp = $(this);
+    		$.ajax({
+    		    method: "post",
+                url: "DynamicSearchHandler.cgi",
+                data: {
+                    para1: $tmp.closest('form').attr("data-array"),
+                    para2: $tmp.val()
+                },
+                success: function(response){
+                    // to do #### 
+                }
+    		});
 	    });//alert($(this).closest('span').text())});
         }
         $passage.append($tmp_form);
