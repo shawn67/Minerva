@@ -509,8 +509,21 @@ function addPassage(event){
 	        subtopic_id: sid,
 	        passage_name: ptext
 		},
+	    beforeSend: function(){
+		$screen_lock = $("<div class='screen-cover'></div>");
+		$screen_lock.css({
+		"position" : "absolute",
+		"z-index" : 10000,
+		"background-color" : "#000",
+		"opacity" : 0,
+		"cursor" : "wait"
+		});
+		$screen_lock.width($("body").width());
+		$screen_lock.height($("body").height());
+		$screen_lock.prependTo($("body"));
+	    },
             success: function(response){
-                $.ajax({
+                /*$.ajax({
                         method: "POST",
                         url: "DynamicSearchHandler.cgi",
                         data:{
@@ -521,9 +534,10 @@ function addPassage(event){
                             case_id: tid,
                             rating: 3
                         },
-                });
-                passageFeedback = JSON.parse(response)
-                addPassageCallBack(ptext, $target, passageFeedback['passage_id'].trim(), doc_id, passageFeedback);
+                });*/
+		$(".screen-cover").remove();
+                passageFeedback = JSON.parse(response);
+                addPassageCallBack(ptext, $target, passageFeedback['passage_id'], doc_id, passageFeedback);
             }
         });
     };
@@ -552,14 +566,24 @@ function addPassageCallBack(ptext, $target, response, doc_id, dict){
 			</div>\
 		    </div>');
     if ($.isEmptyObject(dict)==false) {
-        $tmp_form = $("<form></form>");
-        for (var i = 0; i < dict['option'].length; i++){
-            $tmp_form.append('<input type="radio" class="pair" name="pair" value="' + i + '"/>' + dict['option'][i]);
+        $tmp_form = $('<form class="pairform"></form>');
+	if (dict['options'].length > 0) {
+	    $tmp_form.append('<div class="question">Is evidence to connect: </div>')    
+	} 
+        for (var i = 0; i < dict['options'].length; i++){
+            $radio = $('<input type="radio" class="pair" name="pair" value="' + dict['options'][i] + '"/><span class="optionpair">' + dict['options'][i]+' ?</span><br/>');
+	    $tmp_form.append($radio);
+	    $($radio[0]).on("click", function(){
+		$.ajax({
+		    method: "post",
+		    
+		});
+	    });//alert($(this).closest('span').text())});
         }
         $passage.append($tmp_form);
     }
     $passage.append('\
-                <form>\
+                <form class="scoreform">\
                     <input type="radio" class="score" name="score" value="1" />\
                     OK evidence \
                     <input type="radio" class="score" name="score" value="2" />\
@@ -569,7 +593,10 @@ function addPassageCallBack(ptext, $target, response, doc_id, dict){
                 </form>');
 	$passage.on("dragstart",dragstartfunc);
 	$passage.on("dragend",dragendfunc);
-	$passage.find('p').text(ptext);
+	$passage.find('p').text(ptext).css("cursor","pointer");
+	$passage.find('p').click(function(){
+	    updateHighlight($(this).text());
+	});
 	$passage.find('.docno').css('cursor','pointer').click(backToDocument).text(doc_id);
 	$passage.find('input').click(grade);
 	$passage.find('.deletePassage').click(deletePassage);
@@ -580,6 +607,12 @@ function addPassageCallBack(ptext, $target, response, doc_id, dict){
 	});
 	$target.scrollTop($target[0].scrollHeight);
 	return $passage
+    }
+}
+function updateHighlight(text){
+    if ($("#lemurbox").contents().find("#highlight_inputbox").length) {
+	$("#lemurbox").contents().find("#highlight_inputbox input").val(text.replace(/\s+/g, " ")); 
+	document.getElementById('lemurbox').contentWindow.highlighting(1);
     }
 }
 
