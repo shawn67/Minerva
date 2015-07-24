@@ -566,7 +566,7 @@ function addPassageCallBack(ptext, $target, response, doc_id, dict){
 			</div>\
 		    </div>');
     if ($.isEmptyObject(dict)==false) {
-        $tmp_form = $('<form class="pairform" "data-array='+ dict[parseStorage] + '"></form>');
+        $tmp_form = $('<form class="pairform" data-array="'+ dict['parseStorage'] + '"></form>');
 	if (dict['options'].length > 0) {
 	    $tmp_form.append('<div class="question">Is evidence to connect: </div>')    
 	} 
